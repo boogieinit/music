@@ -20,3 +20,7 @@ Check each script's page first, since some need a setting changed before they ru
 1. Put the script in the top level and make it executable.
 2. Add a row to the table above with a one-line description.
 3. Add `docs/<script-name>.md` with what it does, what it needs, any cautions and an example.
+
+## License
+
+MIT - see [LICENSE](LICENSE).

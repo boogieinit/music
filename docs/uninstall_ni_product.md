@@ -8,13 +8,13 @@ Removes a Native Instruments product from a Mac. It finds the product's applicat
 - **Set `LIBRARY_PATH` first.** Near the top of the script, `LIBRARY_PATH` points to the folder where your Native Instruments sample libraries live. The script ships with an example path on the author's drive, so change it to match your own setup before you run it.
 - **Run it as your normal user, not with `sudo`.** The script uses your username to find your personal preference files, and it asks for your password itself when it needs to remove system folders.
 - **Know the product name.** The name you pass must match the name of the product's files, for example the name of its plug-in in `/Library/Audio/Plug-ins/Components`.
+- **The name has to be at least 3 characters** (not counting spaces) and can't contain a `/`. The script refuses anything else, so an empty or very short name can't match your whole library.
 
 ## Usage
 
-    chmod +x uninstall_ni_product.sh
     ./uninstall_ni_product.sh "Product Name"
 
-Quote the name if it has spaces.
+Quote the name if it has spaces. If you get "permission denied" (for example after downloading the file on its own), run `chmod +x uninstall_ni_product.sh` first.
 
 ## What happens
 

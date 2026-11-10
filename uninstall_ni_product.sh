@@ -53,6 +53,20 @@ fi
 PRODUCT_NAME="$1"
 USERNAME="$USER"
 
+# Validate the product name. An empty or very short name would match almost
+# everything in the library folder, and a name containing "/" could point
+# outside the folders this script is meant to look in.
+NAME_NO_SPACES="${PRODUCT_NAME//[[:space:]]/}"
+if [ ${#NAME_NO_SPACES} -lt 3 ]; then
+    echo "Error: The product name must be at least 3 characters (not counting spaces)."
+    echo "An empty or very short name could match far more files than intended."
+    exit 1
+fi
+if [[ "$PRODUCT_NAME" == */* ]]; then
+    echo "Error: The product name must not contain a '/' character."
+    exit 1
+fi
+
 echo "Preparing to uninstall '$PRODUCT_NAME'..."
 echo "Using library path: $LIBRARY_PATH"
 echo
