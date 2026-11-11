@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: MIT -->
+
 # music
 
 Scripts and tools for music creation and music software. Each one has its own page under [`docs/`](docs/) with the details.

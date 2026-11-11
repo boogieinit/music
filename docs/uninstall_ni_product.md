@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: MIT -->
+
 # uninstall_ni_product.sh
 
 Removes a Native Instruments product from a Mac. It finds the product's application, plug-in, preference and library files, shows you the full list, and deletes them only after you confirm.

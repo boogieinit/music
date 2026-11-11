@@ -1,4 +1,5 @@
 #!/bin/bash
+# SPDX-License-Identifier: MIT
 
 # Script to uninstall Native Instruments products
 # Usage: ./uninstall_ni_product.sh "Product Name"
