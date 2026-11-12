@@ -4,19 +4,46 @@
 
 Removes a Native Instruments product from a Mac. It finds the product's application, plug-in, preference and library files, shows you the full list, and deletes them only after you confirm.
 
+New to the Terminal? Follow **Getting started** in the [README](../README.md) first. It covers getting the files, opening Terminal in the right folder and running a script. Then come back here for the steps specific to this script.
+
 ## Before you run it
 
 - **macOS only.** On any other system the script stops with an error.
-- **Set `LIBRARY_PATH` first.** Near the top of the script, `LIBRARY_PATH` must point to the folder where your Native Instruments sample libraries live. It ships empty, and the script stops with an error (deleting nothing) until you set it. Open the script in a text editor and fill it in, for example `LIBRARY_PATH="/Users/Shared/Native Instruments"`.
+- **Back up first.** Deletion is permanent, not moved to the Trash. A Time Machine backup is the safety net.
+- **Close your DAW and any Native Instruments apps.** The script doesn't check whether they are running.
 - **Run it as your normal user, not with `sudo`.** The script uses your username to find your personal preference files, and it asks for your password itself when it needs to remove system folders.
-- **Know the product name.** The name you pass must match the name of the product's files, for example the name of its plug-in in `/Library/Audio/Plug-ins/Components`.
-- **The name has to be at least 3 characters** (not counting spaces) and can't contain a `/`. The script refuses anything else, so an empty or very short name can't match your whole library.
 
-## Usage
+## Step by step
 
-    ./uninstall_ni_product.sh "Product Name"
+### 1. Tell the script where your libraries are (one time)
 
-Quote the name if it has spaces. If you get "permission denied" (for example after downloading the file on its own), run `chmod +x uninstall_ni_product.sh` first.
+`LIBRARY_PATH` must point to the folder where your Native Instruments sample libraries live. It ships empty, and the script stops with an error (deleting nothing) until you set it.
+
+1. In Finder, find the folder that holds your Native Instruments libraries. Hold the **Option** key, right-click the folder, and choose **Copy "…" as Pathname**.
+2. Right-click `uninstall_ni_product.sh`, choose **Open With**, then **TextEdit**.
+3. Find the line `LIBRARY_PATH=""`. Click between the two quotation marks and paste with ⌘V. Don't delete or retype the quotation marks. It should end up looking like `LIBRARY_PATH="/Users/Shared/Native Instruments"`.
+4. Save with ⌘S. If TextEdit shows a formatting toolbar, choose **Format**, then **Make Plain Text**, before saving, and keep the file name the same.
+
+### 2. Find the exact product name
+
+The name you give the script must match the name of the product's files. It has to be at least 3 characters (not counting spaces) and can't contain a `/`.
+
+In Finder, choose **Go**, then **Go to Folder…**, type `/Library/Audio/Plug-ins/Components`, and look for the product's `.component` file. For `Kontakt 7.component`, the name is `Kontakt 7`. You can also look inside `/Applications/Native Instruments/` for the product's folder name.
+
+### 3. Run it
+
+With Terminal open in the folder (see the README), type this with your product name in quotes, and press Return:
+
+    bash uninstall_ni_product.sh "Kontakt 7"
+
+### 4. Read the list, then decide
+
+The script prints everything it found and asks `Do you want to proceed with deletion? (y/n)`. Type **n** and press Return to cancel with nothing deleted, which makes a safe practice run. Type **y** to delete.
+
+### 5. If it asks for permission
+
+- **Password:** it asks for your Mac password to remove system folders. Nothing shows on screen as you type, which is normal. Press Return when done.
+- **Folder or drive access:** if macOS asks to let Terminal access a folder or drive, click **Allow**.
 
 ## What happens
 
@@ -53,5 +80,4 @@ If nothing is found for the name, it says so and exits without deleting anything
 - **Deletion is permanent.** Items are removed with `rm -rf`, not moved to the Trash. Back up anything you might want first.
 - **Library folders are matched by partial name.** Any folder in `LIBRARY_PATH` whose name contains the text you typed is included, so a short or generic name can match more than you expect. Read the list carefully before you type `y`.
 - **It asks for your password.** Items under `/Library`, `/Applications` and `/Volumes` are removed with `sudo`.
-- **Close your DAW and any Native Instruments apps first.** The script doesn't check whether they are running.
 - **It only removes what is listed above.** Anything stored elsewhere stays in place.
