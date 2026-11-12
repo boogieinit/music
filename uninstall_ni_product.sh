@@ -17,8 +17,9 @@
 ###########################################################################
 
 # Set the path to your Native Instruments library folder
-# This must be set before running the script
-LIBRARY_PATH="/Volumes/Studio/Libraries/Native Instruments"
+# This must be set before running the script. It is left empty on purpose, and the script
+# stops with an error until you fill it in.
+LIBRARY_PATH=""
 
 
 
@@ -37,7 +38,10 @@ fi
 # Check if LIBRARY_PATH is set
 if [ -z "$LIBRARY_PATH" ]; then
     echo "ERROR: LIBRARY_PATH is not set."
-    echo "You must edit this script and set the LIBRARY_PATH variable before running it."
+    echo "You must set it before running this script. Nothing has been deleted."
+    echo
+    echo "Open this script in a text editor ($0), find the LIBRARY_PATH line near the top,"
+    echo "and set it to the folder that holds your Native Instruments libraries, then run it again."
     echo "Example: LIBRARY_PATH=\"/Users/Shared/Native Instruments\""
     exit 1
 fi

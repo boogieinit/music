@@ -7,7 +7,7 @@ Removes a Native Instruments product from a Mac. It finds the product's applicat
 ## Before you run it
 
 - **macOS only.** On any other system the script stops with an error.
-- **Set `LIBRARY_PATH` first.** Near the top of the script, `LIBRARY_PATH` points to the folder where your Native Instruments sample libraries live. The script ships with an example path on the author's drive, so change it to match your own setup before you run it.
+- **Set `LIBRARY_PATH` first.** Near the top of the script, `LIBRARY_PATH` must point to the folder where your Native Instruments sample libraries live. It ships empty, and the script stops with an error (deleting nothing) until you set it. Open the script in a text editor and fill it in, for example `LIBRARY_PATH="/Users/Shared/Native Instruments"`.
 - **Run it as your normal user, not with `sudo`.** The script uses your username to find your personal preference files, and it asks for your password itself when it needs to remove system folders.
 - **Know the product name.** The name you pass must match the name of the product's files, for example the name of its plug-in in `/Library/Audio/Plug-ins/Components`.
 - **The name has to be at least 3 characters** (not counting spaces) and can't contain a `/`. The script refuses anything else, so an empty or very short name can't match your whole library.
