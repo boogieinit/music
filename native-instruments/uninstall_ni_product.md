@@ -4,7 +4,7 @@
 
 Removes a Native Instruments product from a Mac. It finds the product's application, plug-in, preference and library files, shows you the full list, and deletes them only after you confirm.
 
-New to the Terminal? Follow **Getting started** in the [README](../README.md) first. It covers getting the files, opening Terminal in the right folder and running a script. Then come back here for the steps specific to this script.
+New to the Terminal? Follow **Getting started** in the [main README](../README.md#getting-started) first. It covers getting the files, opening Terminal and running a script. Open Terminal in this `native-instruments` folder, then come back here for the steps specific to this script.
 
 ## Before you run it
 
@@ -32,7 +32,7 @@ In Finder, choose **Go**, then **Go to Folder…**, type `/Library/Audio/Plug-in
 
 ### 3. Run it
 
-With Terminal open in the folder (see the README), type this with your product name in quotes, and press Return:
+With Terminal open in the `native-instruments` folder (see the main README), type this with your product name in quotes, and press Return:
 
     bash uninstall_ni_product.sh "Kontakt 7"
 
