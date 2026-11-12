@@ -52,10 +52,52 @@ The script prints everything it found and asks `Do you want to proceed with dele
 3. **Confirm.** It asks `Do you want to proceed with deletion? (y/n)`. Anything other than `y` cancels, and nothing is deleted.
 4. **Delete.** It removes each item and prints `Done` or `Error` for each one.
 5. **Summary.** It reports how many items were deleted and whether any failed.
+6. **Log.** Every step above is also written to a log file you can review later (see [Looking back at what was deleted](#looking-back-at-what-was-deleted)).
 
 If nothing is found for the name, it says so and exits without deleting anything.
 
 **To preview without deleting,** run it and answer `n` at the prompt.
+
+## Looking back at what was deleted
+
+Every run is recorded in a log file, including runs where you answered `n` and runs that found nothing. If something odd happens later, this is where to see exactly what the script did.
+
+**Where it is:** `~/Library/Logs/uninstall_ni_product/uninstall_ni_product.log`
+
+**How to open it:**
+
+- In Finder, choose **Go**, then **Go to Folder…**, paste `~/Library/Logs/uninstall_ni_product`, press Return, and double-click the log file.
+- Or in Terminal: `open -e ~/Library/Logs/uninstall_ni_product/uninstall_ni_product.log`
+
+**What it contains.** Each run starts with `===== Run started` and ends with `===== Run finished`, and the newest run is at the bottom. In between:
+
+- `FOUND`: each item the script found, with its size.
+- `CONFIRM`: your answer to the delete question.
+- `DELETING`, then `DELETED` or `FAILED` (with an error code): one pair for every item.
+- `SUMMARY`: how many items were deleted and how many failed.
+
+An example (the names and sizes here are made up):
+
+```
+2026-11-11 10:15:02  ===== Run started: product 'Kontakt 7' =====
+2026-11-11 10:15:02  User: yourname   Library path: /Users/Shared/Native Instruments
+2026-11-11 10:15:03  FOUND      /Applications/Native Instruments/Kontakt 7  (1.4 GB)
+2026-11-11 10:15:03  FOUND      /Library/Audio/Plug-ins/Components/Kontakt 7.component  (96.0 MB)
+2026-11-11 10:15:09  CONFIRM    asked to delete 2 item(s); you answered 'y'
+2026-11-11 10:15:12  DELETING   /Applications/Native Instruments/Kontakt 7
+2026-11-11 10:15:14  DELETED    /Applications/Native Instruments/Kontakt 7
+2026-11-11 10:15:14  DELETING   /Library/Audio/Plug-ins/Components/Kontakt 7.component
+2026-11-11 10:15:14  DELETED    /Library/Audio/Plug-ins/Components/Kontakt 7.component
+2026-11-11 10:15:14  SUMMARY    2 of 2 item(s) deleted, 0 failed
+2026-11-11 10:15:14  ===== Run finished =====
+```
+
+Good to know:
+
+- **The script won't delete anything if it can't save the log.** It stops with an error first.
+- **The log only records what happened; it can't undo it.** Deleted items are gone for good, so use your backup (such as Time Machine) to restore them.
+- **A `FAILED` line means that item is still there.** Run the script again, or remove it by hand.
+- **The log grows over time.** It is safe to delete or archive it, and the script starts a new one.
 
 ## Where it looks
 

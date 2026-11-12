@@ -6,6 +6,9 @@
 #
 # This script is designed for macOS only.
 #
+# Every run is recorded in ~/Library/Logs/uninstall_ni_product/uninstall_ni_product.log
+# (what was found, your answer, and what was deleted), so you can review it later.
+#
 # IMPORTANT: You MUST set the LIBRARY_PATH variable below before running this script.
 # This should point to your Native Instruments library folder.
 # Example: LIBRARY_PATH="/Users/Shared/Native Instruments"
@@ -72,19 +75,60 @@ if [[ "$PRODUCT_NAME" == */* ]]; then
     exit 1
 fi
 
+# Set up the log: a record of every run, so you can look back later at what was deleted.
+# The script will not delete anything unless it can write this record first.
+LOG_DIR="$HOME/Library/Logs/uninstall_ni_product"
+LOG_FILE="$LOG_DIR/uninstall_ni_product.log"
+if ! mkdir -p "$LOG_DIR" 2>/dev/null || ! touch "$LOG_FILE" 2>/dev/null; then
+    echo "Error: Cannot write the log file at $LOG_FILE"
+    echo "This script will not delete anything without keeping a record. Nothing has been deleted."
+    exit 1
+fi
+
+# Add a line to the log, with the date and time
+log() {
+    printf '%s  %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"
+}
+
+log "===== Run started: product '$PRODUCT_NAME' ====="
+log "User: $USERNAME   Library path: $LIBRARY_PATH"
+
 echo "Preparing to uninstall '$PRODUCT_NAME'..."
 echo "Using library path: $LIBRARY_PATH"
+echo "A record of this run is being saved to: $LOG_FILE"
 echo
 
 # Create an array to store paths that exist and will be deleted
 declare -a PATHS_TO_DELETE
 
+# Print the size of a file or folder in a readable form (for the log)
+item_size() {
+    local size
+    size=$(du -sk "$1" 2>/dev/null | awk '{ kb = $1
+        if (kb >= 1048576) printf "%.1f GB", kb / 1048576
+        else if (kb >= 1024) printf "%.1f MB", kb / 1024
+        else printf "%d KB", kb }')
+    echo "${size:-size unknown}"
+}
+
+# Add a path to the delete list, once, and record it in the log
+add_path() {
+    local path="$1" label="$2" existing
+    for existing in "${PATHS_TO_DELETE[@]}"; do
+        if [ "$existing" = "$path" ]; then
+            return 0
+        fi
+    done
+    PATHS_TO_DELETE+=("$path")
+    echo "$label $path"
+    log "FOUND      $path  ($(item_size "$path"))"
+}
+
 # Function to check if a file/directory exists and add it to the delete list
 check_path() {
     local path="$1"
     if [ -e "$path" ]; then
-        PATHS_TO_DELETE+=("$path")
-        echo "Found: $path"
+        add_path "$path" "Found:"
     fi
 }
 
@@ -97,8 +141,7 @@ check_library_path() {
         # Look for directories in the base path that contain the product name
         for dir in "$base_path"/*; do
             if [ -d "$dir" ] && [[ "$(basename "$dir")" == *"$product"* ]]; then
-                PATHS_TO_DELETE+=("$dir")
-                echo "Found library: $dir"
+                add_path "$dir" "Found library:"
             fi
         done
     fi
@@ -126,6 +169,8 @@ check_library_path "$LIBRARY_PATH" "$PRODUCT_NAME"
 # Check if any paths were found
 if [ ${#PATHS_TO_DELETE[@]} -eq 0 ]; then
     echo "No files or directories related to '$PRODUCT_NAME' were found."
+    log "RESULT     nothing found for '$PRODUCT_NAME'; nothing was deleted"
+    log "===== Run finished ====="
     exit 0
 fi
 
@@ -138,8 +183,11 @@ done
 
 echo
 read -p "Do you want to proceed with deletion? (y/n): " CONFIRM
+log "CONFIRM    asked to delete ${#PATHS_TO_DELETE[@]} item(s); you answered '$CONFIRM'"
 if [[ ! $CONFIRM =~ ^[Yy]$ ]]; then
     echo "Operation canceled."
+    log "RESULT     canceled; nothing was deleted"
+    log "===== Run finished ====="
     exit 0
 fi
 
@@ -151,6 +199,7 @@ ERROR_COUNT=0
 
 for path in "${PATHS_TO_DELETE[@]}"; do
     echo -n "Deleting $path... "
+    log "DELETING   $path"
     
     # Determine if sudo is needed (for system directories)
     if [[ "$path" == "/Library/"* || "$path" == "/Applications/"* || "$path" == "/Volumes/"* ]]; then
@@ -160,14 +209,20 @@ for path in "${PATHS_TO_DELETE[@]}"; do
     fi
     
     # Check if deletion was successful
-    if [ $? -eq 0 ]; then
+    rm_status=$?
+    if [ $rm_status -eq 0 ]; then
         echo "Done"
+        log "DELETED    $path"
         DELETED_COUNT=$((DELETED_COUNT + 1))
     else
         echo "Error"
+        log "FAILED     $path  (error code $rm_status)"
         ERROR_COUNT=$((ERROR_COUNT + 1))
     fi
 done
+
+log "SUMMARY    $DELETED_COUNT of ${#PATHS_TO_DELETE[@]} item(s) deleted, $ERROR_COUNT failed"
+log "===== Run finished ====="
 
 # Display summary
 echo
@@ -186,5 +241,8 @@ else
     echo "Uninstallation of '$PRODUCT_NAME' was partially completed."
     echo "You may need to run this script with administrative privileges to complete the process."
 fi
+
+echo
+echo "A record of everything this run deleted is saved in: $LOG_FILE"
 
 exit 0
